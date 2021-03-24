@@ -43,3 +43,29 @@ go mod init github.com/ksupdev/updev-go-product-api
     * Connection #0 to host localhost left intact
     * Closing connection 0
 ```
+
+> log.Println("Hello world") จะเป็น Command สำหรับการแสดงผลผ่าน Terminal ตัวอย่างข้อมูล ``2021/03/23 13:24:39 Hello world``
+
+> ถ้าเราทำการกำหนด ``http.HandleFunc("/"..... `` นั้นจะหมายความว่าไม่ว่ามันจะเป็น default request หรือก็คือถ้าไม่ตรงกับใครก็จะมาที่เรานี้เอง
+
+เราสามารถใช้ ``d, _ := ioutil.ReadAll(r.Body)`` สำหรับการอ่านค่า Request body เพื่อนำมาแสดงใน log ได้
+```go
+http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
+		log.Println("Hello world")
+		d, _ := ioutil.ReadAll(r.Body)
+
+		log.Printf("Data %s\n", d)
+})
+```
+
+ทดสอบการ request โดยให้มีการโยน body data มาด้วย
+```powershell
+    curl -v -d 'pu' localhost:9090
+    ..
+    ..
+    ..
+    //output
+    2021/03/24 23:52:34 Data pu
+```
+
+> ในการที่เราจะ write log เพื่อแสดงผลใน terminal เราสามารถใช้ ``log.Printf("",.....)`` แต่ถ้าเราต้องการให้มีการ write log แทนที่จะผ่าน terminal แต่ให้ Response กลับไปที่ user เราก็สามารถใช้ ``rw http.ResponseWriter`` และ ``fmt.Fprintf()`` สำหรับกำหนด format ของข้อมูล เพื่อ Response กลับไป

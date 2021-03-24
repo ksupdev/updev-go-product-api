@@ -1,3 +1,3 @@
 module github.com/ksupdev/updev-go-product-api
 
-go 1.15
+go 1.16
