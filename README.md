@@ -69,3 +69,46 @@ http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
 ```
 
 > ในการที่เราจะ write log เพื่อแสดงผลใน terminal เราสามารถใช้ ``log.Printf("",.....)`` แต่ถ้าเราต้องการให้มีการ write log แทนที่จะผ่าน terminal แต่ให้ Response กลับไปที่ user เราก็สามารถใช้ ``rw http.ResponseWriter`` และ ``fmt.Fprintf()`` สำหรับกำหนด format ของข้อมูล เพื่อ Response กลับไป
+
+## ep2
+    เราทำการแยกการทำงานของ Hello และ Good bye ออกจาก ``main.go`` แลำทำการสร้างของ package ``handlers`` เพื่อทำการเก็บ Hello,GoodBye 
+
+    > การในส่วนของ http.Handler มีการกำหนด interface ในภาษา GO มันไม่จำเป็นที่ต้องมีการระบุว่า func ของเรานั้น Implement interface ไหน Go จะสนใจแค่ว่าขอให้มี ชื่อและ parameter ให้ตรงตาม interface ก็จะสามารถใช้งานได้ทันที
+
+```GO
+[filename : server.go]
+package http
+
+type Handler interface {
+    ServeHTTP(ResponseWriter, *Request)
+}
+// ----- end file
+[filename : hello.go]
+type Hello struct {
+    ......
+}
+
+func NewHello(l *log.Logger) *Hello {
+    ......
+}
+// create func has structure same Interface http.Handler
+func (h *Hello) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+    .......
+}
+
+// ----- end file
+
+[filename : main.go]
+
+l := log.New(os.Stdout, "product-api", log.LstdFlags)
+hh := handlers.NewHello(l)
+
+sm := http.NewServeMux()
+//Method Handle requir string parameter and Interface http.Handler
+sm.Handle("/", hh)
+
+```
+
+จากตัวอย่างเราจะเห็นว่าถ้ามีทำการ implement func ServeHTTP สำหรับ Hello เราก็จะไม่สามารถทำการ mapping request กับ Hello action ได้
+
+
