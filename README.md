@@ -112,3 +112,14 @@ sm.Handle("/", hh)
 จากตัวอย่างเราจะเห็นว่าถ้ามีทำการ implement func ServeHTTP สำหรับ Hello เราก็จะไม่สามารถทำการ mapping request กับ Hello action ได้
 
 
+> sig := <-sigChain ref https://tour.golang.org/concurrency/2
+```GO
+	sigChain := make(chan os.Signal)
+	signal.Notify(sigChain, os.Interrupt)
+	signal.Notify(sigChain, os.Kill)
+
+	sig := <-sigChain
+	l.Println("Recieved terminal , graceful shutdown", sig)
+```
+
+> channel : คือวิธีในการนำค่าออกมาจาก go Routines โดยเราสามารถสร้าง channel โดยใช้ ``sigChain := make(chan os.Signal)`` และเราสามารถทำการ set ค่าใส่ channel โดยใช้ ``sigChain <- value ....`` และเราสามารถเอาค่าออกจาก channel โดยใช้ `` sig := <-sigChain``
