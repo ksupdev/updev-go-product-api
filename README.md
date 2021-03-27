@@ -123,3 +123,6 @@ sm.Handle("/", hh)
 ```
 
 > channel : คือวิธีในการนำค่าออกมาจาก go Routines โดยเราสามารถสร้าง channel โดยใช้ ``sigChain := make(chan os.Signal)`` และเราสามารถทำการ set ค่าใส่ channel โดยใช้ ``sigChain <- value ....`` และเราสามารถเอาค่าออกจาก channel โดยใช้ `` sig := <-sigChain``
+
+## ep3
+> REST : Representational State Transfer (REST)
