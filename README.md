@@ -154,3 +154,12 @@ sm.Handle("/", hh)
 การเลือกใช้ convert JSON
 > The only difference is if you want to play with string or bytes use marshal, and if any data you want to read or write to some writer interface, use encodes and decode. [ref](https://stackoverflow.com/questions/33061117/in-golang-what-is-the-difference-between-json-encoding-and-marshalling#:~:text=Marshal%20and%20Unmarshal%20convert%20a,into%20JSON%20and%20vice%20versa.&text=The%20only%20difference%20is%20if,interface%2C%20use%20encodes%20and%20decode.)
 
+## ep4
+test with post method 
+
+``` powershell
+curl http://localhost:9090 -d '{"id":1, "name":"tea", "description":"a nice cup of tea"}' 
+curl -v http://localhost:9090/1 -XPUT -d '{ "name":"update tea", "description":"a nice cup of tea"}'
+```
+
+
