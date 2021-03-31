@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,18 +28,8 @@ func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
 
 func (p *Products) AddProduct(rw http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle POST Product")
-
-	prod := &data.Product{}
-
-	err := prod.FronJSON(r.Body)
-	if err != nil {
-		http.Error(rw, "Unable to unmarshal json ", http.StatusBadRequest)
-		return
-	}
-
-	p.l.Printf("Prod : %#v", prod)
-	data.AddProduct(prod)
-
+	prod := r.Context().Value(KeyProduct{}).(data.Product)
+	data.AddProduct(&prod)
 }
 
 func (p *Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
@@ -51,16 +42,8 @@ func (p *Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	p.l.Println("Handle PUT Product ", id)
-
-	prod := &data.Product{}
-
-	err = prod.FronJSON(r.Body)
-	if err != nil {
-		http.Error(rw, "Unable to unmarshal json ", http.StatusBadRequest)
-		return
-	}
-
-	err = data.UpdateProducts(id, prod)
+	prod := r.Context().Value(KeyProduct{}).(data.Product)
+	err = data.UpdateProducts(id, &prod)
 	if err == data.ErrProductNotFound {
 		http.Error(rw, "Product not found", http.StatusNotFound)
 		return
@@ -70,5 +53,31 @@ func (p *Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Product not found", http.StatusInternalServerError)
 		return
 	}
+}
 
+type KeyProduct struct{}
+
+func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		prod := data.Product{}
+
+		err := prod.FronJSON(r.Body)
+		if err != nil {
+			http.Error(rw, "Unable to unmarshal json", http.StatusBadRequest)
+		}
+
+		ctx := context.WithValue(r.Context(), KeyProduct{}, prod)
+		req := r.WithContext(ctx)
+
+		next.ServeHTTP(rw, req)
+
+	})
+}
+
+// LoggingMiddleware - adds middleware around endpoints
+func (p *Products) LoggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		p.l.Println("Log.. request ", r.Header)
+		next.ServeHTTP(w, r)
+	})
 }
