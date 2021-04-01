@@ -165,3 +165,26 @@ curl -v http://localhost:9090/1 -XPUT -d '{ "name":"update tea", "description":"
 ## ep5 Implement rest with framwork
     implement with Gorilla framework
     ``go get github.com/gorilla/mux``
+
+## ep6 JSON Validation
+implement go validation
+    ``go get github.com/go-playground/validator/v10``
+
+- error case
+    ``` powershell
+    ----- request -----
+    curl -v http://localhost:9090/4 -X PUT -d '{ "name":"55555", "description":"a nice cup of tea"}'
+
+    ----- ouput -----
+
+    Unable to validate product : Key: 'Product.Price' Error:Field validation for 'Price' failed on the 'gt' tag
+    Key: 'Product.SKU' Error:Field validation for 'SKU' failed on the 'required' tag
+
+    ```
+- success case
+
+    ```powershell
+    ----- request -----
+    curl -v http://localhost:9090/4 -X PUT -d '{ "name":"55555", "description":"a nice cup of tea","sku":"abc-abc-abc","price":1}'
+
+    ```
