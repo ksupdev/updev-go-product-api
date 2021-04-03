@@ -253,4 +253,21 @@ which swagger || GO111MODULE=off go get -u github.com/go-swagger/go-swagger/cmd/
 swagger generate spec -o ./swagger.yaml --scan-models
 ```
 
+- Implement Doc open api ReDoc [redoc](https://github.com/Redocly) : ทำการ Install  https://github.com/go-openapi/runtime
+    ```powershell
+    go get github.com/go-openapi/runtime/middleware
+    <!-- go get package github.com/go-openapi/runtime/middleware -->
+    go mod vendor
+    ```
+- ทำการ run ``go run main.go`` และทำการเปิด ``http://localhost:9090/docs``
+
+    ![error](./images-readme/error-doc-openapi.png)
+    เนื่องจากในส่วนของ Redoc เองก็เป็น Javascript Framework และเมื่อพยายามจะ download ``swagger.yml`` จึงไม่สามารถทำการ Donwload จะต้องมีการ config ในส่วนของ CORS ก่อน
+    ``Error downloading http://localhost:9090/swagger.yaml HTTP ERROR 404``
+
+    แต่เพื่อเป็นการปัญหาชั่วคราว เลยทำการ mapping request ตรงไปที่ directory เลย
+    ``getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))``
+
+> ``go mod vendor`` ,``go mod tidy``
+
 
