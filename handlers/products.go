@@ -1,3 +1,18 @@
+// Package classification of Product API
+//
+// Documentation for Product API
+//
+//	Schemes: http
+//	BasePath: /
+//	Version: 1.0.0
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+// swagger:meta
 package handlers
 
 import (
@@ -11,6 +26,14 @@ import (
 	"github.com/ksupdev/updev-go-product-api/data"
 )
 
+// A list of products
+// swagger:response productsResponse
+type productsResponseWrapprt struct {
+	// All current products
+	// in: body
+	Body []data.Product
+}
+
 type Products struct {
 	l *log.Logger
 }
@@ -19,6 +42,12 @@ func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
+// swagger:route GET /products products listProducts
+// Return a list of products from the database
+// responses:
+//	200: productsResponse
+
+// GetProduct returns the products from the data store
 func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
 	lp := data.GetProducts()
 	err := lp.ToJson(rw)

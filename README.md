@@ -188,3 +188,69 @@ implement go validation
     curl -v http://localhost:9090/4 -X PUT -d '{ "name":"55555", "description":"a nice cup of tea","sku":"abc-abc-abc","price":1}'
 
     ```
+
+## ep7 Create swagger document
+Before create file, you must have to install 
+
+```powershell
+    brew tap go-swagger/go-swagger
+    brew install go-swagger
+```
+- create comment in ``./handlers/products.go`` at top level
+- create ``MakeFile`` at root project
+- run command ``make swagger``
+
+ทำการสร้าง struct สำหรับช่วยในการ Defind document ของเรา เพราะจริงๆแล้วในส่วนของการ Response ของเรานั้นไม่ได้ใช้ Struct ตัวนี้แต่ใช้ โครงสร้างที่มีลักษณะเดียวกัน ``GetProducts()``
+```go
+[fileName : ./handlers/products.go]
+// A list of products
+// swagger:response productsResponse
+type productsResponseWrapprt struct {
+	// All current products
+	// in: body
+	Body []data.Product
+}
+
+[fileName : ./data/products.go]
+func GetProducts() Products {
+	return productList
+    // var productList []*Product
+}
+```
+
+คำสั้งเกี่ยวกับการ generate swagger ล่าสุดพบว่า
+
+```go
+[file: Makefile]
+check_install:
+    which swagger || GO111MODULE=off go get -u github.com/go-swagger/go-swagger/cmd/swagger
+
+swagger: check_install
+    GO111MODULE=off swagger generate spec -o ./swagger.yaml --scan-models
+
+--- Error ----
+karoon@Nuttakorns-MacBook-Pro updev-go-product-api % make swagger
+which swagger || GO111MODULE=off go get -u github.com/go-swagger/go-swagger/cmd/swagger
+/usr/local/bin/swagger
+GO111MODULE=off swagger generate spec -o ./swagger.yaml --scan-models
+unsupported type "invalid type"
+make: *** [swagger] Error 1
+```
+
+ไม่สามารถ genereate swagger ได้ในบ้าง tage ``swagger:response productsResponse`` พอลองไปหาตาม google พบว่ามีคนแนะนำให้ทำการ remove ``GO111MODULE=off`` ออกสำหรับในส่วนของ swagger จึงสามารถใช้งานได้ปกติ
+```go
+[file: Makefile]
+check_install:
+    which swagger || GO111MODULE=off go get -u github.com/go-swagger/go-swagger/cmd/swagger
+
+swagger: check_install
+    swagger generate spec -o ./swagger.yaml --scan-models
+
+---- Messge ----
+karoon@Nuttakorns-MacBook-Pro updev-go-product-api % make swagger
+which swagger || GO111MODULE=off go get -u github.com/go-swagger/go-swagger/cmd/swagger
+/usr/local/bin/swagger
+swagger generate spec -o ./swagger.yaml --scan-models
+```
+
+
