@@ -9,7 +9,9 @@ definitions:
         type: string
         x-go-name: Description
       id:
+        description: the id for this user
         format: int64
+        minimum: 1
         type: integer
         x-go-name: ID
       name:
@@ -22,6 +24,8 @@ definitions:
       sku:
         type: string
         x-go-name: SKU
+    required:
+    - id
     type: object
     x-go-package: github.com/ksupdev/updev-go-product-api/data
 info:
@@ -38,9 +42,27 @@ paths:
           $ref: '#/responses/productsResponse'
       tags:
       - products
+  /products/{id}:
+    delete:
+      description: Return a list of products from the database
+      operationId: deleteProduct
+      parameters:
+      - description: The id of product to delete from the database
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "201":
+          $ref: '#/responses/noContent'
+      tags:
+      - products
 produces:
 - application/json
 responses:
+  noContent:
+    description: ""
   productsResponse:
     description: A list of products
     schema:

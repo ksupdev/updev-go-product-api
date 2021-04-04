@@ -192,6 +192,8 @@ implement go validation
 ## ep7 Create swagger document
 Before create file, you must have to install 
 
+> swagger doc [REF](https://goswagger.io/)
+
 ```powershell
     brew tap go-swagger/go-swagger
     brew install go-swagger
@@ -269,5 +271,7 @@ swagger generate spec -o ./swagger.yaml --scan-models
     ``getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))``
 
 > ``go mod vendor`` ,``go mod tidy``
+
+> ``strconv`` Package strconv implements conversions to and from string representations of basic data types. [REF](https://golang.org/pkg/strconv/) 
 
 

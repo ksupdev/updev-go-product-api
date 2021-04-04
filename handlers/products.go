@@ -28,10 +28,21 @@ import (
 
 // A list of products
 // swagger:response productsResponse
-type productsResponseWrapprt struct {
+type productsResponseWrapper struct {
 	// All current products
 	// in: body
 	Body []data.Product
+}
+
+// swagger:response noContent
+type productNoContent struct{}
+
+// swagger:parameters deleteProduct
+type productIDParameterWrapper struct {
+	// The id of product to delete from the database
+	// in: path
+	// required: true
+	ID int `json:id`
 }
 
 type Products struct {
@@ -40,20 +51,6 @@ type Products struct {
 
 func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
-}
-
-// swagger:route GET /products products listProducts
-// Return a list of products from the database
-// responses:
-//	200: productsResponse
-
-// GetProduct returns the products from the data store
-func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
-	lp := data.GetProducts()
-	err := lp.ToJson(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-	}
 }
 
 func (p *Products) AddProduct(rw http.ResponseWriter, r *http.Request) {
