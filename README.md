@@ -275,3 +275,47 @@ swagger generate spec -o ./swagger.yaml --scan-models
 > ``strconv`` Package strconv implements conversions to and from string representations of basic data types. [REF](https://golang.org/pkg/strconv/) 
 
 
+- fix bugs
+
+```golang
+
+----- original ------
+// Create handles POST requests to add new products
+func (p *Products) Create(rw http.ResponseWriter, r *http.Request) {
+	// fetch the product from the context
+	prod := r.Context().Value(KeyProduct{}).(data.Product)
+
+	p.l.Printf("[DEBUG] Inserting product: %#v\n", prod)
+	data.AddProduct(prod)
+}
+------- output -------
+
+http: panic serving [::1]:50890: interface conversion: interface {} is *data.Product, not data.Product
+
+
+```
+
+จากการหาข้อมูลพบว่า error นี้ส่วนมากจะเกิดจากการที่เราจะ convert interface{} ไปยังอีก data type สิ่งที่เราควรทำคือจะต้องแน่ใจก่อนว่า ``value ที่ส่งมานั้น มี data type ถูกต้องหรือเปล่า``
+
+```golang
+----- new version ----
+unc (p *Products) Create(rw http.ResponseWriter, r *http.Request) {
+	// fetch the product from the context
+	p.l.Println("------Handle Create------")
+	prod := r.Context().Value(KeyProduct{})
+	p.l.Println("------Check data type of value in interface------ ", reflect.TypeOf(prod))
+
+	if _, ok := prod.(*data.Product); ok {
+		p.l.Printf("[DEBUG] Inserting product: %#v\n", prod)
+		data.AddProduct(*(prod.(*data.Product)))
+	} else {
+		p.l.Println("[ERROR] Not okay")
+	}
+}
+
+```
+เราเพิ่มในส่วนของ if เพื่อทำการตรวจสอบ datatype ของ value ว่่าเป็นไปตามที่เราคิดหรือเปล่าเพื่อป้องกันปัญหา
+> ``reflect.TypeOf(prod) `` ใช้สำหรับ Check datatype of data
+> ``*(prod.(*data.Product))`` ทำการ Convert pointer to value ที่เราต้อง Convert เพราะว่า data.AddProduct นั้นจะรับค่าเป็นแบบ value เท่านั้น
+
+

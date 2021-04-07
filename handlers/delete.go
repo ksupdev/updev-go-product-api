@@ -2,34 +2,40 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/ksupdev/updev-go-product-api/data"
 )
 
 // swagger:route DELETE /products/{id} products deleteProduct
-// Return a list of products from the database
+// Update a products details
+//
 // responses:
-//	201: noContent
+//	201: noContentResponse
+//  404: errorResponse
+//  501: errorResponse
 
-// DeleteProduct delete products from database
-func (p *Products) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
-	// this will always convert because of the router
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
+// Delete handles DELETE requests and removes items from the database
+func (p *Products) Delete(rw http.ResponseWriter, r *http.Request) {
+	id := getProductID(r)
 
-	p.l.Println("Handler DELETE Product", id)
+	p.l.Println("[DEBUG] deleting record id", id)
 
 	err := data.DeleteProduct(id)
 	if err == data.ErrProductNotFound {
-		http.Error(rw, "Product not found", http.StatusNotFound)
+		p.l.Println("[ERROR] deleting record id does not exist")
+
+		rw.WriteHeader(http.StatusNotFound)
+		data.ToJSON(&GenericError{Message: err.Error()}, rw)
 		return
 	}
 
 	if err != nil {
-		http.Error(rw, "Product not found", http.StatusInternalServerError)
+		p.l.Println("[ERROR] deleting record", err)
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		data.ToJSON(&GenericError{Message: err.Error()}, rw)
 		return
 	}
 
+	rw.WriteHeader(http.StatusNoContent)
 }

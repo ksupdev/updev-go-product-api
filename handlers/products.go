@@ -1,22 +1,6 @@
-// Package classification of Product API
-//
-// Documentation for Product API
-//
-//	Schemes: http
-//	BasePath: /
-//	Version: 1.0.0
-//
-//	Consumes:
-//	- application/json
-//
-//	Produces:
-//	- application/json
-//
-// swagger:meta
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -26,98 +10,47 @@ import (
 	"github.com/ksupdev/updev-go-product-api/data"
 )
 
-// A list of products
-// swagger:response productsResponse
-type productsResponseWrapper struct {
-	// All current products
-	// in: body
-	Body []data.Product
-}
-
-// swagger:response noContent
-type productNoContent struct{}
-
-// swagger:parameters deleteProduct
-type productIDParameterWrapper struct {
-	// The id of product to delete from the database
-	// in: path
-	// required: true
-	ID int `json:id`
-}
-
-type Products struct {
-	l *log.Logger
-}
-
-func NewProducts(l *log.Logger) *Products {
-	return &Products{l}
-}
-
-func (p *Products) AddProduct(rw http.ResponseWriter, r *http.Request) {
-	p.l.Println("Handle POST Product")
-	prod := r.Context().Value(KeyProduct{}).(data.Product)
-	data.AddProduct(&prod)
-}
-
-func (p *Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
-
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		http.Error(rw, "Unable to convert ID", http.StatusBadRequest)
-		return
-	}
-
-	p.l.Println("Handle PUT Product ", id)
-	prod := r.Context().Value(KeyProduct{}).(data.Product)
-	err = data.UpdateProducts(id, &prod)
-	if err == data.ErrProductNotFound {
-		http.Error(rw, "Product not found", http.StatusNotFound)
-		return
-	}
-
-	if err != nil {
-		http.Error(rw, "Product not found", http.StatusInternalServerError)
-		return
-	}
-}
-
+// KeyProduct is a key used for the Product object in the context
 type KeyProduct struct{}
 
-func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		prod := data.Product{}
-
-		err := prod.FronJSON(r.Body)
-		if err != nil {
-			p.l.Println("[ERROR] deserializibg product", err)
-			http.Error(rw, "Unable to unmarshal json", http.StatusBadRequest)
-			return
-		}
-
-		// validate the product
-		err = prod.Validate()
-		if err != nil {
-			p.l.Println("[ERROR] validate product", err)
-			http.Error(
-				rw,
-				fmt.Sprintf("Unable to validate product : %s", err),
-				http.StatusBadRequest)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), KeyProduct{}, prod)
-		req := r.WithContext(ctx)
-
-		next.ServeHTTP(rw, req)
-
-	})
+// Products handler for getting and updating products
+type Products struct {
+	l *log.Logger
+	v *data.Validation
 }
 
-// LoggingMiddleware - adds middleware around endpoints
-func (p *Products) LoggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		p.l.Println("Log.. request ", r.Header)
-		next.ServeHTTP(w, r)
-	})
+// NewProducts returns a new products handler with the given logger
+func NewProducts(l *log.Logger, v *data.Validation) *Products {
+	return &Products{l, v}
+}
+
+// ErrInvalidProductPath is an error message when the product path is not valid
+var ErrInvalidProductPath = fmt.Errorf("Invalid Path, path should be /products/[id]")
+
+// GenericError is a generic error message returned by a server
+type GenericError struct {
+	Message string `json:"message"`
+}
+
+// ValidationError is a collection of validation error messages
+type ValidationError struct {
+	Messages []string `json:"messages"`
+}
+
+// getProductID returns the product ID from the URL
+// Panics if cannot convert the id into an integer
+// this should never happen as the router ensures that
+// this is a valid number
+func getProductID(r *http.Request) int {
+	// parse the product id from the url
+	vars := mux.Vars(r)
+
+	// convert the id into an integer and return
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		// should never happen
+		panic(err)
+	}
+
+	return id
 }
