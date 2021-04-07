@@ -5,7 +5,7 @@ github.com/PuerkitoBio/urlesc
 # github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 github.com/asaskevich/govalidator
 # github.com/davecgh/go-spew v1.1.1
-## explicit
+github.com/davecgh/go-spew/spew
 # github.com/go-openapi/analysis v0.19.10
 github.com/go-openapi/analysis
 github.com/go-openapi/analysis/internal
@@ -47,8 +47,6 @@ github.com/go-stack/stack
 # github.com/gorilla/mux v1.8.0
 ## explicit
 github.com/gorilla/mux
-# github.com/kr/text v0.2.0
-## explicit
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
 # github.com/mailru/easyjson v0.7.1
@@ -57,10 +55,11 @@ github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
 # github.com/mitchellh/mapstructure v1.3.2
 github.com/mitchellh/mapstructure
-# github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e
-## explicit
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/stretchr/testify v1.7.0
 ## explicit
+github.com/stretchr/testify/assert
 # go.mongodb.org/mongo-driver v1.3.4
 go.mongodb.org/mongo-driver/bson
 go.mongodb.org/mongo-driver/bson/bsoncodec
@@ -83,9 +82,8 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
-## explicit
 # gopkg.in/yaml.v2 v2.3.0
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
+gopkg.in/yaml.v3

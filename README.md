@@ -190,6 +190,7 @@ implement go validation
     ```
 
 ## ep7 Create swagger document
+> http://localhost:9090/docs
 Before create file, you must have to install 
 
 > swagger doc [REF](https://goswagger.io/)
@@ -318,4 +319,13 @@ unc (p *Products) Create(rw http.ResponseWriter, r *http.Request) {
 > ``reflect.TypeOf(prod) `` ใช้สำหรับ Check datatype of data
 > ``*(prod.(*data.Product))`` ทำการ Convert pointer to value ที่เราต้อง Convert เพราะว่า data.AddProduct นั้นจะรับค่าเป็นแบบ value เท่านั้น
 
+Install test package
+```powershell
+go get package github.com/stretchr/testify
+go mod tidy
+go mod vendor
+```
 
+### Easter Eggs
+- go mod tidy : คำสั่งนี้มีไว้เพื่อช่วยในการลบ dependencies ที่ไม่ได้ต้องการใช้งานแล้ว โดยปกติ Go build จะแค่ทำการอัพเดท dependencies แต่จะไม่ต้องการลบอะไรที่เราไม่ได้ใช้งานแล้ว
+- go mod vendor : ถ้าเราต้องการให้มีโฟลเดอร์​ vendor ในโปรเจคของเรา สามารถรันคำสั่งนี้เพื่อดาวโหลดทุก dependencies ที่เราเขียนไว้ใน go.mod มาเก็บไว้ในโฟลเดอร์ vendor ใน root โฟลเดอร์ของเรานั้นเอง สำหรับบางเคสที่ต้องการใช้งานนั้นเอง
